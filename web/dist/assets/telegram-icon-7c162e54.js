@@ -1,0 +1,1 @@
+const s="/home/assets/facebok-logo-d27a440f.svg",o="/home/assets/twitter-logo-27a5878b.svg",t="/home/assets/instagram-logo-7b38e5b6.svg",a="/home/assets/phone-icon-4399c1f2.svg",e="/home/assets/telegram-icon-a844ac83.svg";export{s as _,o as a,t as b,a as c,e as d};
