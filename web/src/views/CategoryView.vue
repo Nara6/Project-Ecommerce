@@ -6,7 +6,7 @@ export default {
       item: [],
       product: [],
       showSubcategories: false,
-      url: "/api"
+      url: "/image"
     }
   },
   async mounted(){

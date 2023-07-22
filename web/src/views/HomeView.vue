@@ -4,7 +4,7 @@ export default {
     return{
       category: [],
       product:[],
-      url: "/api"
+      url: "/image"
     }
   },
   async mounted() {

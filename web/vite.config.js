@@ -20,6 +20,15 @@ export default defineConfig({
         target: "http://35.186.150.74:1026",
         changeOrigin: true,
         secure: false,
+        ws: true,
+        
+      },
+      "^/image": {
+        target: "http://35.186.150.74:1026",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/image/, '')
       },
     },
   },
