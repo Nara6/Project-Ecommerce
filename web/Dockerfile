@@ -1,4 +1,6 @@
-FROM nginx:1.15.8-alpine
-EXPOSE 80
-
-COPY ./dist/ /usr/share/nginx/html
+FROM node:lts-alpine
+WORKDIR /app
+COPY . .
+RUN npm install
+EXPOSE 5173
+CMD [ "npm", "run", "dev", "--", "--host", "0.0.0.0" ]

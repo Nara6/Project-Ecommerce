@@ -12,8 +12,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: "/home",
+  // base: "/home",
   server: {
+    host:true,
     proxy: {
       "/api": {
         target: "http://35.186.150.74:1026",
