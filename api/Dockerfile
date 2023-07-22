@@ -5,6 +5,9 @@ COPY .  /var/www
 RUN rm -f composer.lock
 RUN composer install
 RUN cp .env.example .env
+RUN php artisan cache:clear
+RUN php artisan config:clear
+RUN php artisan cache:clear
 RUN php artisan key:generate
 RUN php artisan jwt:secret
 
