@@ -25,8 +25,8 @@ class ProductController extends Controller
         ->get();
         return $data;
     }
-    public function getProductById(){
-        $data = Product::select('*')->where(['category_id' => $categoryId])->get();
+    public function getProductById($id){
+        $data = Product::select('*')->where("id",$id)->with(['category','image'])->get();
         return $data;
     }
 

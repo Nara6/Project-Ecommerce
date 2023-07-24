@@ -24,8 +24,9 @@
           <img src="../assets/images/user_svgrepo.com.svg" alt="" class="h-[35px] ">
           <div class="hidden group-hover:block flex-col absolute font-bold
             bg-white w-[80px] h-[80px] rounded-md drop-shadow-2xl p-2">
-            <router-link to="/auth/login" class="py-2 block hover:text-blue-400">Login</router-link>
-            <router-link to="/auth/signup" class="block w-[100px] hover:text-blue-400">Sign up</router-link>
+            <router-link v-if="!user"  to="/auth/login" class="py-2 block hover:text-blue-400">Login</router-link>
+            <router-link v-if="!user" to="/auth/signup" class="block w-[100px] hover:text-blue-400">Sign up</router-link>
+            <div @click="logout" v-if="user" class="block w-[100px] hover:text-blue-400">Log out</div>
           </div>
         </div>
         <router-link to="/wishlist">
@@ -39,5 +40,30 @@
     </div>
   </div>
   <router-view/>
-  
 </template>
+<script>
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      user: {}
+    }
+  },
+  async mounted() {
+    const user = await axios.get('/api/me',{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      console.log(user);
+      this.user = user.data.user;
+  },
+  methods: {
+    logout(){
+      localStorage.removeItem('token');
+      this.$router.go(0);
+    }
+  },
+}
+
+</script>

@@ -1,3 +1,33 @@
+<script>
+export default {
+  data() {
+    return {
+      product: [],
+      products: {},
+      description:[],
+      
+    }
+  },
+  async beforeCreate() {
+    const proUrl = `/api/product/read/${this.$route.params.id}`
+    // console.log(proUrl)
+    const res = await fetch(proUrl,{
+      method: "GET",
+      headers: {
+            'Content-type': 'application/json',
+      }
+    })
+    this.product = await res.json();
+    this.products = this.product[0];
+
+
+    this.description = this.products.description.split(',');
+    console.log(this.description);
+
+  },
+}
+</script>
+
 <template>
 
   <div class="w-full p-5">
@@ -10,42 +40,30 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M14.1668 28.3333C14.1668 29.0074 14.5729 29.6152 15.1957 29.8731C15.8185 30.1311 16.5353 29.9885 17.012 29.5119L25.3453 21.1785C25.9962 20.5276 25.9962 19.4724 25.3453 18.8215L17.012 10.4882C16.5353 10.0115 15.8185 9.8689 15.1957 10.1269C14.5729 10.3848 14.1668 10.9926 14.1668 11.6667V28.3333Z" fill="black"/>
       </svg>
-      <span class="text-[20px]">Phone</span>
+      <span class="text-[20px]">{{ products.category.name }}</span>
     </div>
-    <div class="relative w-full m-auto h-[400px]">
+    <div class="relative w-full m-auto h-[400px]" >
         <div class=" w-[60%] absolute left-0 flex h-[400px] justify-center
-          bg-[#EEEEEE] pl-0 gap-y-4 drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
-          <img src="../assets/images/iphone-14promax.png" class="w-[300px] h-auto" alt="">
+          bg-[#EEEEEE] pl-0 gap-y-4 items-center drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
+          <img :src="'/image'+products.image_url" class="w-[300px] h-fit" alt="product image">
         </div>
         <div class="absolute right-0 gap-y-2 flex w-[37%] h-fit p-4 border-[1px] flex-col bg-[#F5F5F5]">
             <span>
-              Iphone 14 pro max
+              {{ products.title }}
             </span>
             <div class="flex justify-between pb-4 border-b-[1px]">
               <span class="text-[#121BEE] font-bold">
-                $999.99
+                $ {{ products.price }}
               </span>
               <span class="text-[12px] text-gray-400
               ">200 sold</span>
             </div>
             <div class="p-5 border-b-[1px]">
-              <div class="flex gap-x-4">
+              <div class="flex gap-x-4" v-for="(des,index) in description" :key="index">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM18.4158 9.70405C18.8055 9.31268 18.8041 8.67952 18.4127 8.28984L17.7041 7.58426C17.3127 7.19458 16.6796 7.19594 16.2899 7.58731L10.5183 13.3838L7.19723 10.1089C6.80398 9.72117 6.17083 9.7256 5.78305 10.1189L5.08092 10.8309C4.69314 11.2241 4.69758 11.8573 5.09083 12.2451L9.82912 16.9174C10.221 17.3039 10.8515 17.301 11.2399 16.911L18.4158 9.70405Z" fill="#121BEE"/>
                 </svg>
-                <span>Chip Apple A16 Bionic</span>
-              </div>
-              <div class="flex gap-x-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM18.4158 9.70405C18.8055 9.31268 18.8041 8.67952 18.4127 8.28984L17.7041 7.58426C17.3127 7.19458 16.6796 7.19594 16.2899 7.58731L10.5183 13.3838L7.19723 10.1089C6.80398 9.72117 6.17083 9.7256 5.78305 10.1189L5.08092 10.8309C4.69314 11.2241 4.69758 11.8573 5.09083 12.2451L9.82912 16.9174C10.221 17.3039 10.8515 17.301 11.2399 16.911L18.4158 9.70405Z" fill="#121BEE"/>
-                </svg>
-                <span>1TB 6GB RAM</span>
-              </div>
-              <div class="flex gap-x-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM18.4158 9.70405C18.8055 9.31268 18.8041 8.67952 18.4127 8.28984L17.7041 7.58426C17.3127 7.19458 16.6796 7.19594 16.2899 7.58731L10.5183 13.3838L7.19723 10.1089C6.80398 9.72117 6.17083 9.7256 5.78305 10.1189L5.08092 10.8309C4.69314 11.2241 4.69758 11.8573 5.09083 12.2451L9.82912 16.9174C10.221 17.3039 10.8515 17.301 11.2399 16.911L18.4158 9.70405Z" fill="#121BEE"/>
-                </svg>
-                <span>Li-lon 4323 mAh</span>
+                <span>{{des}}</span>
               </div>
             </div>
             <div class="flex pt-4 gap-x-4 pb-4 border-b-[1px]">
@@ -54,21 +72,13 @@
               bg-black font-semibold drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]"
               >Add to cart</button>
             </div>
-            <span class="p-1 text-[14px]">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical.</span>
+            <span class="p-1 text-[14px]">{{ products.note }}</span>
         </div>
     </div>
     <div class="flex gap-x-4 pt-4 pb-4 border-b-[1px]">
       <div class="w-[100px] h-[100px] border-[5px] shadow-[10px_10px_4px_0_rgba(0,0,0,0.25)]
-        border-blue-400 flex justify-center">
-        <img src="../assets/images/iphone-14promax.png" class="w-fit h-auto" alt="">
-      </div>
-      <div class="w-[100px] h-[100px] border-[5px] shadow-[10px_10px_4px_0_rgba(0,0,0,0.25)]
-        border-[#EAEBEA] flex justify-center">
-        <img src="../assets/images/iphone-14promax.png" class="w-fit h-auto" alt="">
-      </div>
-      <div class="w-[100px] h-[100px] border-[5px] shadow-[10px_10px_4px_0_rgba(0,0,0,0.25)]
-        border-[#EAEBEA] flex justify-center">
-        <img src="../assets/images/iphone-14promax.png" class="w-fit h-auto" alt="">
+        border-blue-400 flex justify-center items-center">
+        <img :src="'/image'+products.image_url" class="w-[80px] h-fit" alt="">
       </div>
     </div>
     <div class="flex flex-col">

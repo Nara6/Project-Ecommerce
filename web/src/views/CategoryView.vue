@@ -6,7 +6,8 @@ export default {
       item: [],
       product: [],
       showSubcategories: false,
-      url: "/image"
+      url: "/image",
+      currentHref: '', 
     }
   },
   async mounted(){
@@ -28,11 +29,39 @@ export default {
     this.category=await category.json();
     // console.log(this.product);
   },
+  created(){
+    this.currentHref = window.location.href;
+    window.addEventListener('popstate', this.handleURIChange);
+  },
   methods: {
     toggleSubcategories(cat) {
       cat.showSubcategories = !cat.showSubcategories;
     },
+    async BaseCategory(id='',itemId=''){
+      const proUrl = "/api/product/read"
+      console.log();
+      const product = await fetch(`${proUrl}?category_id=${id}&item_id=${itemId}`,{
+      method: "GET",
+      headers: {
+            'Content-type': 'application/json',
+      }
+      });
+      // console.log(product.json());
+      this.product = await product.json();
+      // console.log(this.product);
+    },
+    handleURIChange() {
+      // Update the currentHref when the URI changes
+      this.currentHref = window.location.href;
+    },
   },
+  watch:{
+    currentHref(newHref) {
+      console.log('Href has changed:', newHref);
+
+      // Perform other actions or call methods based on the newHref value
+    },
+  }
 }
 </script>
 
@@ -65,13 +94,16 @@ export default {
                     <svg :class="{'rotate-90': cat.showSubcategories}" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M4.13588 16.7515C4.48003 17.0828 5.03731 17.0828 5.38058 16.7515L12.6587 9.72751C13.347 9.0641 13.347 7.98786 12.6587 7.32445L5.32787 0.2486C4.98723 -0.0792828 4.43692 -0.0835323 4.09188 0.240105C3.73981 0.570538 3.73555 1.11502 4.08234 1.45055L10.7919 7.92499C11.136 8.25713 11.136 8.79483 10.7919 9.12696L4.13588 15.5504C3.79172 15.8817 3.79172 16.4194 4.13588 16.7515Z" fill="black" fill-opacity="0.6"/>
                     </svg>
-                    <span class="text-[20px]">{{ cat.name }}</span>
+                    <router-link class="text-[20px]" @click="BaseCategory(cat.id,'')" :to="'?category_id='+cat.id">{{ cat.name }}</router-link>
                   </div>
                   <div class="text-[20px]">({{ cat.item.length }})</div>
                 </div>
                 <ul v-if="cat.showSubcategories" v-for="item in cat.item" :key="item.id" class="flex flex-col list-disc list-inside pl-1.5">
                     <!-- Display subcategories here -->
-                    <li class="text-[18px] font-semibold cursor-pointer">{{ item.name }}</li>
+                    <router-link :to="'?category_id='+cat.id+'&item_id='+item.id">
+                      <li class="text-[18px] font-semibold cursor-pointer" @click="BaseCategory('',item.id)" >{{ item.name }}</li>
+                    </router-link>
+                    
                 </ul>
 
                 
@@ -94,13 +126,14 @@ export default {
             </div>
 
             <div class="flex w-full gap-y-4" >
-              <div class="flex gap-x-5 w-full flex-wrap" v-for="products in product" :key="products.id">
+              <div v-if="product" class="flex gap-x-5 w-full flex-wrap" v-for="products in product" :key="products.id">
                 <div class="flex h-fit p-[36px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
                  <img :src="this.url+products.image_url" alt="" class="w-[150px] h-[150px]">
                  <span class="text-[20px]">{{ products.title }}</span>
                  <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
                 </div>
-              </div>     
+              </div>
+
             </div>
             <!-- pagination -->
             <div class="w-full flex justify-center p-6 h-auto">

@@ -1,5 +1,6 @@
 <script>
 import auth from '@/services/Auth/index.js'
+import axios from 'axios'
 export default {
     name:'login',
     data(){
@@ -15,10 +16,20 @@ export default {
         async onSubmit(e){
             const url = "/api/auth/login"
             e.preventDefault();
-            const formData = JSON.stringify({email: this.email, password: this.password});
-            // console.log(formData);
-            const res = await auth.login(url,formData);
-            // console.log("hello");
+            axios.post(url,{
+                email: this.email,
+                password: this.password
+            })
+            .then((res)=>{
+                // console.log(res.data.token);
+                if(res.data.success){
+                    localStorage.setItem('token', res.data.token);
+                    this.$router.push({path:'/home'});
+
+                }else{
+                    alert(res.data.error);
+                }
+            })
         }
     },
 }

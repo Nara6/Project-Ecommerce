@@ -1,10 +1,12 @@
 <script>
+import axios from 'axios'
 export default {
   data(){
     return{
       category: [],
       product:[],
-      url: "/image"
+      url: "/image",
+      // user: {}
     }
   },
   async mounted() {
@@ -26,6 +28,7 @@ export default {
       console.log(this.product);
   },
   
+  
 }
 </script>
 
@@ -46,7 +49,7 @@ export default {
         <p class="trend">Trending Categories</p>
         <div class="flex justify-between">
           <div class="flex flex-col text-center justify-between text-[25px] hover:cursor-pointer" v-for="cat in category" :key="cat.id">
-            <img :src="this.url+cat.image_url" alt="" class="w-[150px] h-fit">
+            <router-link to="/product"><img :src="this.url+cat.image_url" alt="" class="w-[150px] h-fit"></router-link> 
             <span style="font-family: 'Roboto', sans-serif;" class="w-full">{{cat.name}}</span>
           </div>
         </div>
@@ -90,13 +93,14 @@ export default {
         <p class="trend">Popular Products</p>
         <a href="#" class="underline underline-offset-2 text-[20px]" style="font-family: 'Roboto',sans-serif; color: #0862CB;">View all Product</a>
       </div>
-      <router-link to="/product/detail">
-      <div class="flex justify-between " >
-        <div v-for="products in product" :key="products.id" class="w-[310px] h-[370px] bg-gray-200 flex flex-col items-center hover:cursor-pointer justify-center relative" style="box-shadow: 4px 10px 4px rgba(0, 0, 0, 0.25);"><img :src="this.url+products.image_url" class="w-[200px] h-fit" alt=""><span class="text-red-500 text-[30px] font-bold absolute bottom-[10px]" style="font-family: 'Roboto',sans-serif;">$ {{ products.price }}</span></div>
-        
-      </div>
-      </router-link>
       
+      <div class="flex justify-between " >
+        <div v-for="products in product" :key="products.id" class="w-[310px] h-[370px] bg-gray-200 flex flex-col items-center hover:cursor-pointer justify-center relative" style="box-shadow: 4px 10px 4px rgba(0, 0, 0, 0.25);">
+          <router-link :to="'/product/detail/'+products.id">
+            <img :src="this.url+products.image_url" class="w-[200px] h-fit" alt=""><span class="text-red-500 text-[30px] font-bold absolute bottom-[10px]" style="font-family: 'Roboto',sans-serif;">$ {{ products.price }}</span>
+          </router-link>
+        </div>
+      </div>
       
     </div>
     <div class="mt-[40px] w-full h-[120px] flex" style="background-color: #5599FF;font-family: 'Roboto',sans-serif;">
