@@ -8,7 +8,8 @@ export default {
       description:[],
       loading: true,
       user: [],
-      cart: ''
+      cart: '',
+      product_link: ''
     }
   },
   async created() {
@@ -25,6 +26,14 @@ export default {
             'Content-type': 'application/json',
       }
     })
+    const product = await fetch("/api/product/read",{
+        method:"GET",
+        headers: {
+            'Content-type': 'application/json',
+        }
+      })
+    this.product_link = await product.json();
+    // console.log(this.product_link);
     this.product = await res.json();
     this.products = this.product[0];
     this.loading = false;
@@ -145,30 +154,15 @@ export default {
       <span class="font-bold text-[20px] pt-2 w-fit border-b-[2px] border-blue-600">
         You might also like
       </span>
-      <div class="flex pt-5 w-full justify-between">
-        <div class="h-fit flex flex-col items-center bg-white font-bold
+      <div class="flex pt-5 w-full justify-between" >
+        <div v-for="product in product_link" :key="product.id"
+        class="h-fit flex flex-col items-center bg-white font-bold
          w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
-        <img class="w-[100px] h-fit" src="../assets/images/iphone-14promax.png" alt="">
-        <span>Samsung s20 ultra</span>
-        <span class="text-blue-500">$799.99</span>
-        </div>
-        <div class="h-fit flex flex-col items-center bg-white font-bold
-         w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
-        <img class="w-[100px] h-fit" src="../assets/images/iphone-14promax.png" alt="">
-        <span>Samsung s20 ultra</span>
-        <span class="text-blue-500">$799.99</span>
-        </div>
-        <div class="h-fit flex flex-col items-center bg-white font-bold
-         w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
-        <img class="w-[100px] h-fit" src="../assets/images/iphone-14promax.png" alt="">
-        <span>Samsung s20 ultra</span>
-        <span class="text-blue-500">$799.99</span>
-        </div>
-        <div class="h-fit flex flex-col items-center bg-white font-bold
-         w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
-        <img class="w-[100px] h-fit" src="../assets/images/iphone-14promax.png" alt="">
-        <span>Samsung s20 ultra</span>
-        <span class="text-blue-500">$799.99</span>
+         <a :href="'/product/detail/'+product.id">
+          <img class="w-[200px] h-fit" :src="'/image'+product.image_url" alt="">
+          <span>{{ product.title }}</span>
+          <span class="text-blue-500">${{ product.price }}</span>
+         </a>
         </div>
       </div>
     </div>

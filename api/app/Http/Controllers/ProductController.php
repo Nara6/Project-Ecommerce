@@ -26,7 +26,7 @@ class ProductController extends Controller
         }
         $data = $data->limit($limit)
         ->offset(($page-1)*$limit)
-        ->orderBy('id', 'DESC')
+        ->orderBy('title', 'ASC')
         ->get();
         return $data;
     }

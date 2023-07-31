@@ -14,7 +14,7 @@ export default {
   },
   async mounted(){
     const catUrl = "/api/category/read"
-    const proUrl = "/api/product/read"
+    const proUrl = "/api/product/read?limit=10&"
     const category = await fetch(catUrl,{
       method: "GET",
       headers: {
@@ -44,7 +44,7 @@ export default {
     async BaseCategory(id='',itemId=''){
       this.loading1 = true;
       this.product=''
-      const proUrl = "/api/product/read"
+      const proUrl = "/api/product/read?limit=10&"
       console.log();
       const product = await fetch(`${proUrl}?category_id=${id}&item_id=${itemId}`,{
       method: "GET",
@@ -118,7 +118,7 @@ export default {
             </div>
           </div>
           <!-- for display Product -->
-          <div class="h-screen w-full flex gap-y-4 flex-col ">
+          <div class="h-screen w-full flex gap-y-4 flex-col">
             <!-- filter -->
             <div class="w-full h-[100px] rounded-[10px] border-[1px] flex justify-between p-[35px]">
               <div class="text-[18px]">
@@ -135,19 +135,19 @@ export default {
             <div v-if="loading1" class="w-full h-full flex justify-center items-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#333]"></div>
             </div>
-            <div class="flex w-full gap-y-4" >
-              <div v-if="product" class="flex gap-x-5 w-full flex-wrap" v-for="products in product" :key="products.id">
-                <router-link :to="'/product/detail/'+products.id">
-                  <div class="flex h-fit p-[36px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
-                  <img :src="this.url+products.image_url" alt=""
-                   class="w-[150px] h-[150px] transition duration-300 ease-in-out hover:scale-110">
-                  <span class="text-[20px]">{{ products.title }}</span>
-                  <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
-                  </div>
-                </router-link>
-              </div>
-
+            <div class="flex gap-5 w-full flex-wrap">
+                <div class="w-[260px]" v-if="product" v-for="products in product" :key="products.id">
+                  <router-link :to="'/product/detail/'+products.id">
+                    <div class="flex h-fit p-[36px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
+                      <img :src="this.url+products.image_url" alt=""
+                      class="w-[150px] h-[150px] transition duration-300 ease-in-out hover:scale-110">
+                      <span class="text-[20px]">{{ products.title }}</span>
+                      <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
+                    </div>
+                  </router-link>
+                </div>
             </div>
+
             <!-- pagination -->
             <div class="w-full flex justify-center p-6 h-auto">
               <div class="flex gap-x-4 items-center" v-if="product!=''">
