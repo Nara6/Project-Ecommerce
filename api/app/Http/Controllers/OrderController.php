@@ -10,6 +10,10 @@ class OrderController extends Controller
     public function read(){
         return $data = Order::select('*')->get();
     }
+    public function getOrderById($id){
+        $data = Order::select('*')->where("id",$id)->get();
+        return $data;
+    }
     public function create(Request $req){
         $validator = Validator::make($req->all(),[
             'user_id'=> 'required|exists:user,id',

@@ -15,13 +15,18 @@ class ProductController extends Controller
 {
     public function read(Request $req){
         $data = Product::select('*')->with(['category', 'item','image']);
+        $page = $req->has('page') ? $req->get('page') : 1;
+        $limit = $req->has('limit') ? $req->get('limit'): 4;
+
         if($req->category_id && $req->category_id != 0){
             $data = $data->where('category_id', $req->category_id);
         }
         if($req->item_id && $req->item_id != 0){
             $data = $data->where('item_id', $req->item_id);
         }
-        $data = $data->orderBy('id', 'DESC')
+        $data = $data->limit($limit)
+        ->offset(($page-1)*$limit)
+        ->orderBy('id', 'DESC')
         ->get();
         return $data;
     }
@@ -78,5 +83,24 @@ class ProductController extends Controller
             'product' => $product,
             'message' => 'product has been successfully created.'
         ], 200);
+    }
+    public function remove($id){
+        $data = Product::find($id);
+        if($data){
+
+            $data->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data has been deleted',
+            ], 200);
+
+        }else{
+
+            return response()->json([
+                'message' => 'Invalid data.',
+            ], 400);
+
+        }
     }
 }

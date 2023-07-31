@@ -1,22 +1,22 @@
 <script>
 import auth from '@/services/Auth/index.js'
 import axios from 'axios'
+import { toHandlers } from 'vue'
 export default {
     name:'login',
     data(){
         return{
             email:'',
             password:'',
+            loading: false,
         }
     },
-    // async mounted(){
-    //     console.log("hi");
-    // },
     methods: {
         async onSubmit(e){
+            this.loading = true;
             const url = "/api/auth/login"
             e.preventDefault();
-            axios.post(url,{
+            await axios.post(url,{
                 email: this.email,
                 password: this.password
             })
@@ -24,12 +24,13 @@ export default {
                 // console.log(res.data.token);
                 if(res.data.success){
                     localStorage.setItem('token', res.data.token);
-                    this.$router.push({path:'/home'});
+                    this.$router.push({path:'/cart'});
 
                 }else{
                     alert(res.data.error);
                 }
             })
+            this.loading=false;
         }
     },
 }
@@ -56,7 +57,7 @@ export default {
                         <div class="flex justify-center w-full mt-6">
                         <button type="submit" 
                         class="p-5 bg-[#FF3535CC] text-white font-bold py-3 rounded-sm w-[40%]">
-                        Login</button>
+                        {{loading ? 'Loading...' : 'Login'  }}</button>
                         </div>
                     </form>
                 </div>

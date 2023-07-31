@@ -1,3 +1,81 @@
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      user: '',
+      cart: [],
+      subtotal: '',
+      cambodianCities: [
+      'Phnom Penh',
+      'Siem Reap',
+      'Battambang',
+      'Sihanoukville',
+      'Kampot',
+      'Kep',
+      'Koh Kong',
+      'Kratie',
+      'Kampong Cham',
+      'Kampong Thom',
+      'Preah Vihear',
+      'Kandal',
+      'Takeo',
+      'Kampong Speu',
+      'Kampot',
+      'Svay Rieng',
+      'Kampong Chhnang',
+      'Banteay Meanchey',
+      'Oddar Meanchey',
+      'Pailin',
+      'Mondulkiri',
+      'Ratanakiri',
+      'Stung Treng',
+      ],
+      shipping_address: {
+        firstName:'',
+        lastName:'',
+        company:'',
+        address: '',
+        city: '',
+        country: '',
+        apt:'',
+        zipCode: ''
+      }
+    }
+  },
+  async mounted() {
+    const user = await axios.get('/api/me', {
+          headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+      });
+      console.log(user.data);
+      if (user.data.success===false) {
+          Toastify({
+          text: user.data.status,
+          backgroundColor: "red",
+          duration: 3000, // 3 seconds
+          close: true,
+          }).showToast();
+          this.$router.push({ path: '/auth/login' });
+      } else {
+          this.user = user.data.user;
+      }
+  },
+  created() {
+    this.cart = localStorage.getItem('cart');
+    this.subtotal = localStorage.getItem('subtotal');
+    if(localStorage.getItem('shipping_address')){
+      this.shipping_address = JSON.parse(localStorage.getItem('shipping_address'));
+    }
+  },
+  methods: {
+    SaveToLocal(){
+      localStorage.setItem('shipping_address', JSON.stringify(this.shipping_address));
+    }
+  },
+}
+</script>
 <template>
     
     <div class="w-full p-[50px]">
@@ -11,26 +89,21 @@
         </div>
         <div class="relative w-full m-auto ">
             <div class=" w-[65%] absolute left-0 flex flex-col border-t-[1px] pl-0 gap-y-4 ">
-              <div class="w-full border-b-[1px] flex flex-col gap-y-4 pb-8">
-                <div class="flex justify-between pt-4">
-                  <div class="text-[20px] font-[600]">Customer information</div>
-                  <div class="text-[20px]">Already have an account?
-                    <router-link to="/auth/login" class="text-blue-500 underline">Login</router-link>
-                  </div>
-                </div>
-                <input class="p-2 pl-5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" type="text" placeholder="Email">
-              </div>
               <div class="w-full flex flex-col gap-y-4">
-                <div class="text-[20px] font-[600]">Shopping address</div>
+                <div class="text-[20px] font-[600]">Shipping address</div>
                 <div class="flex gap-x-7">
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
+                  required
+                  v-model="shipping_address.firstName"
                   placeholder="First name"
                   >
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
+                  required
+                  v-model="shipping_address.lastName"
                   placeholder="Last name"
                   >
                 </div>
@@ -38,6 +111,7 @@
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
+                  v-model="shipping_address.company"
                   placeholder="Company (Optional)"
                   >
                 </div>
@@ -45,24 +119,33 @@
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-[70%]
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text" 
+                  required
+                  v-model="shipping_address.address"
                   placeholder="Address"
                   >
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-[30%]
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
+                  v-model="shipping_address.apt"
                   placeholder="Apt. (Optional)"
                   >
                 </div>
                 <div class="flex w-full gap-x-7">
-                  <select name="" id="" class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
-                    <option value="Country">Country</option>
+                  <select v-model="shipping_address.country" 
+                   id="" class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
+                    <option value="" disabled selected>Select Country</option>
+                    <option value="Cambodia">Cambodia</option>
                   </select>
-                  <select name="" id="" class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
-                    <option value="State">State</option>
+                  <select name="" id="" v-model="shipping_address.city"
+                   class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
+                   <option value="" disabled selected>Select City</option>
+                   <option v-for="city in cambodianCities" :key="city" :value="city">{{ city }}</option>
                   </select>
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
-                  type="text"
+                  type="text" 
+                  required
+                  v-model="shipping_address.zipCode"
                   placeholder="Zip Code"
                   >
                 </div>
@@ -76,7 +159,7 @@
                     <span>Back to Cart</span>
                   </div>
                   </router-link>
-                  <router-link to="/cart/shipping" class="w-full">
+                  <router-link to="/cart/shipping" class="w-full" @click="SaveToLocal()">
                     <div class="p-3.5 text-white rounded-[20px] font-bold bg-black
                     w-full flex drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] justify-center">
                     <span>Continues to Ship</span>
@@ -86,14 +169,14 @@
                 </div>
               </div>
             </div>
-            <div class="absolute right-0 flex w-[30%] h-[350px] p-4 border-[1px] flex-col bg-[#F5F5F5]">
+            <div v-if="subtotal" class="absolute right-0 flex w-[30%] h-[350px] p-4 border-[1px] flex-col bg-[#F5F5F5]">
                 <div class="text-[20px] border-b-[1px] w-full font-bold">
                     Summary (1Item)
                 </div>
                 <div class="flex flex-col pt-4 pb-4 gap-y-4 border-b-[1px]">
                     <div class="flex justify-between">
                         <span>Subtotal</span>
-                        <span>$999.99</span>
+                        <span>${{subtotal}}</span>
 
                     </div>
                     <div class="flex justify-between">
@@ -107,7 +190,7 @@
                 </div>
                 <div class="flex justify-between pt-4 pb-6 border-b-[1px]">
                     <span>Total</span>
-                    <span>$999.99</span>
+                    <span>${{ subtotal }}</span>
                 </div>
                 <div class="flex justify-center pb-2 w-full gap-x-4 pt-4">
                     <input type="text" placeholder="Apply promo code"

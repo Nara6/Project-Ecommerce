@@ -3,10 +3,10 @@ import axios from 'axios'
 export default {
   data(){
     return{
-      category: [],
+      category: '',
       product:[],
       url: "/image",
-      // user: {}
+      loading: true
     }
   },
   async mounted() {
@@ -25,6 +25,7 @@ export default {
       })
       this.product = await product.json();
       this.category = await category.json();
+      this.loading = false;
       console.log(this.product);
   },
   
@@ -33,7 +34,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper mt-4 w-full">
+  <div class="wrapper mt-4 w-full" v-if="category">
     <div class="w-full h-[425px] slider mt-4">
       <p class="best">best product of the day</p>
       <img src="../assets/images/headphone.png" alt="" class="headphone">
@@ -49,7 +50,8 @@ export default {
         <p class="trend">Trending Categories</p>
         <div class="flex justify-between">
           <div class="flex flex-col text-center justify-between text-[25px] hover:cursor-pointer" v-for="cat in category" :key="cat.id">
-            <router-link to="/product"><img :src="this.url+cat.image_url" alt="" class="w-[150px] h-fit"></router-link> 
+            <router-link to="/product"><img :src="this.url+cat.image_url" alt=""
+               class="w-[150px] h-fit transition duration-300 ease-in-out hover:scale-110"></router-link> 
             <span style="font-family: 'Roboto', sans-serif;" class="w-full">{{cat.name}}</span>
           </div>
         </div>
@@ -94,10 +96,12 @@ export default {
         <a href="#" class="underline underline-offset-2 text-[20px]" style="font-family: 'Roboto',sans-serif; color: #0862CB;">View all Product</a>
       </div>
       
-      <div class="flex justify-between " >
+      <div class="flex justify-between gap-x-5 " >
         <div v-for="products in product" :key="products.id" class="w-[310px] h-[370px] bg-gray-200 flex flex-col items-center hover:cursor-pointer justify-center relative" style="box-shadow: 4px 10px 4px rgba(0, 0, 0, 0.25);">
-          <router-link :to="'/product/detail/'+products.id">
-            <img :src="this.url+products.image_url" class="w-[200px] h-fit" alt=""><span class="text-red-500 text-[30px] font-bold absolute bottom-[10px]" style="font-family: 'Roboto',sans-serif;">$ {{ products.price }}</span>
+          <router-link :to="'/product/detail/'+products.id" class="flex justify-center">
+            <img :src="this.url+products.image_url" 
+            class="w-[200px] h-fit transition duration-300 ease-in-out hover:scale-110" alt="">
+            <span class="text-red-500 text-[30px] font-bold absolute bottom-[10px]" style="font-family: 'Roboto',sans-serif;">$ {{ products.price }}</span>
           </router-link>
         </div>
       </div>
@@ -150,6 +154,9 @@ export default {
       </div>
     
     </div>
+  </div>
+  <div v-if="loading" class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-300">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#333]"></div>
   </div>
 </template>
 

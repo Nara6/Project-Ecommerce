@@ -4,10 +4,12 @@ export default {
     return {
       category: [],
       item: [],
-      product: [],
+      product: '',
       showSubcategories: false,
       url: "/image",
       currentHref: '', 
+      loading: true,
+      loading1: false 
     }
   },
   async mounted(){
@@ -27,6 +29,8 @@ export default {
     });
     this.product = await product.json();
     this.category=await category.json();
+    this.loading = false; // Set loading to false once data is fetched
+
     // console.log(this.product);
   },
   created(){
@@ -38,6 +42,8 @@ export default {
       cat.showSubcategories = !cat.showSubcategories;
     },
     async BaseCategory(id='',itemId=''){
+      this.loading1 = true;
+      this.product=''
       const proUrl = "/api/product/read"
       console.log();
       const product = await fetch(`${proUrl}?category_id=${id}&item_id=${itemId}`,{
@@ -46,8 +52,9 @@ export default {
             'Content-type': 'application/json',
       }
       });
-      // console.log(product.json());
       this.product = await product.json();
+      this.loading1 = false; // Set loading to false once data is fetched
+
       // console.log(this.product);
     },
     handleURIChange() {
@@ -57,7 +64,7 @@ export default {
   },
   watch:{
     currentHref(newHref) {
-      console.log('Href has changed:', newHref);
+      // console.log('Href has changed:', newHref);
 
       // Perform other actions or call methods based on the newHref value
     },
@@ -115,7 +122,7 @@ export default {
             <!-- filter -->
             <div class="w-full h-[100px] rounded-[10px] border-[1px] flex justify-between p-[35px]">
               <div class="text-[18px]">
-                Showing 1-9 of 9 result
+                Showing 1-{{ product.length }} of {{ product.length }} result
               </div>
               <div class="flex gap-x-3 items-center">
                 <span class="font-bold">Sort By:</span>
@@ -123,21 +130,27 @@ export default {
                   <option value="Testing">Alphabetically, A-Z</option>
                 </select>
               </div>
+              
             </div>
-
+            <div v-if="loading1" class="w-full h-full flex justify-center items-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#333]"></div>
+            </div>
             <div class="flex w-full gap-y-4" >
               <div v-if="product" class="flex gap-x-5 w-full flex-wrap" v-for="products in product" :key="products.id">
-                <div class="flex h-fit p-[36px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
-                 <img :src="this.url+products.image_url" alt="" class="w-[150px] h-[150px]">
-                 <span class="text-[20px]">{{ products.title }}</span>
-                 <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
-                </div>
+                <router-link :to="'/product/detail/'+products.id">
+                  <div class="flex h-fit p-[36px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
+                  <img :src="this.url+products.image_url" alt=""
+                   class="w-[150px] h-[150px] transition duration-300 ease-in-out hover:scale-110">
+                  <span class="text-[20px]">{{ products.title }}</span>
+                  <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
+                  </div>
+                </router-link>
               </div>
 
             </div>
             <!-- pagination -->
             <div class="w-full flex justify-center p-6 h-auto">
-              <div class="flex gap-x-4 items-center">
+              <div class="flex gap-x-4 items-center" v-if="product!=''">
                 <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41" fill="none">
                   <path d="M32.4583 32.4582L21.708 21.7078C21.0409 21.0407 21.0409 19.959 21.708 19.2919L32.4583 8.5415" stroke="black" stroke-opacity="0.6" stroke-width="3.41667" stroke-linecap="round" stroke-linejoin="round"/>
                   <path d="M18.7917 32.4582L8.04131 21.7078C7.37415 21.0407 7.37415 19.959 8.04131 19.2919L18.7917 8.5415" stroke="black" stroke-opacity="0.6" stroke-width="3.41667" stroke-linecap="round" stroke-linejoin="round"/>
@@ -154,6 +167,9 @@ export default {
               </div>
             </div>
           </div>
+        </div>
+        <div v-if="loading" class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-300">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#333]"></div>
         </div>
         <!-- footer -->
 

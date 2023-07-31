@@ -1,3 +1,74 @@
+<script>
+import axios from "axios";
+export default {
+    name:'signup',
+    data(){
+        return{
+            email:'',
+            fullname: '',
+            password:'',
+            confirm_password: '',
+            loading: false,
+        }
+    },
+    methods: {
+        showSuccessToast(message) {
+            Toastify({
+                text: message,
+                type: "success",
+                backgroundColor: "blue",
+                canTimeout: true,
+                duration: 3000, // 3 seconds
+                close: true,
+            }).showToast();
+            },
+            // Function to display an error toast
+            showErrorToast(message) {
+            Toastify({
+                text: message,
+                backgroundColor: "red",
+                canTimeout: true,
+                duration: 3000, // 3 seconds
+                close: true,
+            }).showToast();
+        },
+        async onSubmit(e){
+            this.loading=true;
+            if(this.password===this.confirm_password){
+                const url = "/api/auth/register"
+                e.preventDefault();
+                await axios.post(url,{
+                    username: this.fullname,
+                    phone: '016838248',
+                    role: 2,
+                    email: this.email,
+                    password: this.password
+                })
+                .then((res)=>{
+                    // console.log(res.data.token);
+                    if(res.data.success){
+                        this.showSuccessToast(res.data.message);
+                        this.$router.push({name: 'login'});
+
+                    }else{
+                        console.log(res.data);
+                        this.showErrorToast(res.data.error.email);
+                    }
+                })
+                .catch((err)=>{
+                    // console.log(err);
+                    this.showErrorToast(err);
+                })
+            }else{
+                this.showErrorToast("Input password doesn't match!");
+            }
+            this.loading=false;
+            
+        }
+    },
+}
+</script>
+
 <template>
     <div class="w-full h-screen main flex justify-center items-center">
         <div class="w-[90%] h-[80%] bg-white rounded-lg flex">
@@ -8,27 +79,27 @@
                     Create your Free Account
                 </div>
                 <div class="px-9">
-                    <form action="" class="w-[80%] flex gap-y-2 flex-col font-semibold">
+                    <form @submit="onSubmit" class="w-[80%] flex gap-y-2 flex-col font-semibold">
                         <label for="full-name">Full name <span class="text-red-500">*</span></label>
-                        <input required placeholder="ex. yin soknara" type="text" 
+                        <input v-model="fullname" required placeholder="ex. yin soknara" type="text" 
                         class="bg-[#F4F4F4] py-2.5 px-[20px] w-full placeholder:text-[16px] rounded-md" 
                         >
                         <label for="full-name">Email <span class="text-red-500">*</span></label>
-                        <input type="text" placeholder="ex. yinsoknara@gmail.com" required
+                        <input v-model="email" type="text" placeholder="ex. yinsoknara@gmail.com" required
                         class="bg-[#F4F4F4] w-full placeholder:text-[16px] py-2.5 px-[20px] rounded-md" 
                         >
                         <label for="full-name">Password <span class="text-red-500">*</span></label>
-                        <input type="password" required placeholder="••••••••"
+                        <input v-model="password" type="password" required placeholder="••••••••"
                         class="bg-[#F4F4F4] w-full placeholder:text-[16px] py-2.5 px-[20px] rounded-md"
                         >
                         <label for="full-name">Confirm Password <span class="text-red-500">*</span></label>
-                        <input type="text" required placeholder="••••••••"
+                        <input v-model="confirm_password" type="password" required placeholder="••••••••"
                         class="bg-[#F4F4F4] w-full placeholder:text-[16px] py-2.5 px-[20px] rounded-md"
                         >
                         <div class="flex justify-center w-full mt-6">
                         <button type="submit" 
                         class="p-5 bg-[#FF3535CC] text-white font-bold py-3 rounded-sm w-[40%]">
-                        Create Account</button>
+                        {{ loading ? 'Loading...' : 'Create Account' }}</button>
                         </div>
                     </form>
                 </div>

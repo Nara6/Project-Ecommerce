@@ -1,16 +1,24 @@
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       product: [],
-      products: {},
+      products: '',
       description:[],
-      
+      loading: true,
+      user: [],
+      cart: ''
     }
   },
-  async beforeCreate() {
-    const proUrl = `/api/product/read/${this.$route.params.id}`
-    // console.log(proUrl)
+  async created() {
+    const user = await axios.get('/api/me', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+    });
+    this.user = user.data.user;
+    const proUrl = `/api/product/read/${this.$route.params.id}`;
     const res = await fetch(proUrl,{
       method: "GET",
       headers: {
@@ -19,18 +27,69 @@ export default {
     })
     this.product = await res.json();
     this.products = this.product[0];
-
-
+    this.loading = false;
     this.description = this.products.description.split(',');
-    console.log(this.description);
+  },
+  methods: {
+    showSuccessToast(message) {
+      Toastify({
+        text: message,
+        type: "success",
+        backgroundColor: "blue",
+        canTimeout: true,
+        duration: 3000, // 3 seconds
+        close: true,
+      }).showToast();
+    },
+    // Function to display an error toast
+    showErrorToast(message) {
+      Toastify({
+        text: message,
+        backgroundColor: "red",
+        canTimeout: true,
+        duration: 3000, // 3 seconds
+        close: true,
+      }).showToast();
+    },
+    async addtoCart(id) {
+      const cartUrl = `/api/cart/create`;
+      try {
+        if(!this.user){
+          this.showErrorToast("Please login to create a new cart");
+        }else if(this.user){
+          const res = await fetch(cartUrl,{
+          method: "POST",
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify({
+              product_id: id,
+              user_id: this.user.id
+          })
+        });
+        console.log(this.user);
+        this.cart = await res.json();
+          if(this.cart.success) {
+            this.showSuccessToast("Sucessfully add to cart");
+          }else{
+            this.showErrorToast("Failed to add to cart");
+          }
+        }
+        
+      } catch (error) {
+        console.error(error);
 
+      }
+
+    }
   },
 }
 </script>
 
 <template>
 
-  <div class="w-full p-5">
+  <div class="w-full p-5" v-if="products">
     <div class="flex items-center">
       <span class="text-blue-500 text-[20px]">Home</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -70,6 +129,7 @@ export default {
               <input type="number" value="1" class="p-3 w-[70px] bg-[#D9D9D9] font-bold">
               <button class="w-fit rounded-[15px] p-3 text-white
               bg-black font-semibold drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]"
+              @click="addtoCart(products.id)"
               >Add to cart</button>
             </div>
             <span class="p-1 text-[14px]">{{ products.note }}</span>
@@ -113,7 +173,7 @@ export default {
       </div>
     </div>
   </div>
-  <div class="mt-[40px] w-full h-[120px] flex" style="background-color: #5599FF;font-family: 'Roboto',sans-serif;">
+  <div v-if="products" class="mt-[40px] w-full h-[120px] flex" style="background-color: #5599FF;font-family: 'Roboto',sans-serif;">
       <div class="w-[40%] flex flex-col justify-center items-center">
         <p class="text-white text-[32px]">Sign up with us</p>
         <p class="text-gray-200 text-[20px] pl-[78px]">Be the first our Newsletter today!</p>
@@ -127,7 +187,7 @@ export default {
         </form>
       </div>
     </div>
-  <div class="w-full h-[125px] flex text-white justify-between pt-4 pl-[200px] pr-[200px]" style="background-color: #1E2425 ">
+  <div v-if="products" class="w-full h-[125px] flex text-white justify-between pt-4 pl-[200px] pr-[200px]" style="background-color: #1E2425 ">
     <div class="flex flex-col w-[150px]">
       <p class="font-bold text-[18px] text-center">Follow us</p>
       <div class="flex gap-x-4">
@@ -158,7 +218,10 @@ export default {
       <p class="font-bold text-[18px] text-center">We accept</p>
       <img src="../assets/images/pay-method.png" alt="">
     </div>
-  
+    
+  </div>
+  <div v-if="loading" class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-300">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#333]"></div>
   </div>
 </template>
 

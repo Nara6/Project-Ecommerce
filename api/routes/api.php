@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\CartController;
 
 
 /*
@@ -48,6 +49,7 @@ Route::get('shippingaddress/read', [ShippingAddressController::class, 'read']);
 Route::get('shippingmethod/read', [ShippingMethodController::class, 'read']);
 Route::get('paymentmethod/read', [PaymentMethodController::class, 'read']);
 Route::get('order/read', [OrderController::class, 'read']);
+Route::get('order/read/{id}', [OrderController::class, 'getOrderById']);
 Route::get('orderdetail/read', [OrderDetailController::class, 'read']);
 
 
@@ -62,6 +64,8 @@ Route::middleware('jwt.verify')->prefix('color')->group(function(){
 });
 Route::middleware('jwt.verify')->prefix('product')->group(function(){
     Route::post('create', [ProductController::class, 'create']);
+    Route::delete('remove/{id}', [ProductController::class, 'remove']);
+
 });
 Route::middleware('jwt.verify')->prefix('billingaddress')->group(function(){
     Route::post('create', [BillingAddressController::class, 'create']);
@@ -83,6 +87,12 @@ Route::middleware('jwt.verify')->prefix('orderdetail')->group(function(){
 });
 Route::middleware('jwt.verify')->prefix('image')->group(function(){
     Route::post('create', [ImageController::class, 'create']);
+});
+Route::middleware('jwt.verify')->prefix('cart')->group(function(){
+    Route::post('create', [CartController::class, 'create']);
+    Route::get('read', [CartController::class, 'read']);
+    Route::delete('remove/{id}', [CartController::class, 'remove']);
+
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
