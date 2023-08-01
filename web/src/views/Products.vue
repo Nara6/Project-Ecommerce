@@ -136,7 +136,7 @@ export default {
             </div>
             <div class="flex pt-4 gap-x-4 pb-4 border-b-[1px]">
               <input type="number" value="1" class="p-3 w-[70px] bg-[#D9D9D9] font-bold">
-              <button class="w-fit rounded-[15px] p-3 text-white
+              <button class="w-fit rounded-[15px] p-3 text-white hover:bg-gray-600
               bg-black font-semibold drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]"
               @click="addtoCart(products.id)"
               >Add to cart</button>
@@ -158,7 +158,8 @@ export default {
         <div v-for="product in product_link" :key="product.id"
         class="h-fit flex flex-col items-center bg-white font-bold
          w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
-         <a :href="'/product/detail/'+product.id">
+         <a :href="'/product/detail/'+product.id"
+          class="flex flex-col items-center">
           <img class="w-[200px] h-fit" :src="'/image'+product.image_url" alt="">
           <span>{{ product.title }}</span>
           <span class="text-blue-500">${{ product.price }}</span>

@@ -4,7 +4,7 @@ export default {
     data() {
         return {
             user: [],
-            cart: [],
+            cart: '',
             products: [],
             cartData: {},
             loading: true,
@@ -80,7 +80,7 @@ export default {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                 });
-                this.cart = cart.data;
+                this.cart = await cart.data;
                 this.loading1=false;
             }
         },
@@ -96,10 +96,26 @@ export default {
             });
             return subtotal.toFixed(2); // Return the subtotal with two decimal places
         },
+        showErrorToast(message) {
+            Toastify({
+                text: message,
+                backgroundColor: "red",
+                canTimeout: true,
+                duration: 3000, // 3 seconds
+                close: true,
+            }).showToast();
+        },
         saveCartToLocalStorage() {
+            console.log(this.cart);
         // Convert the cart array to JSON and save it to localStorage
-            localStorage.setItem("cart", JSON.stringify(this.cart));
-            localStorage.setItem("subtotal", this.calculateSubtotal());
+            if(this.cart.length > 0) {
+                localStorage.setItem("cart", JSON.stringify(this.cart));
+                localStorage.setItem("subtotal", this.calculateSubtotal());
+                this.$router.push({name: 'checkout'})
+            }else{
+                this.showErrorToast("You don't have any cart yet!");
+            }
+            
         },
     },
     watch: {
@@ -182,9 +198,7 @@ export default {
                     <span>${{ calculateSubtotal() }}</span>
                 </div>
                 <div class="flex justify-center pt-6 pb-2">
-                    <router-link to="/cart/checkout">
-                        <button class="w-[200px] p-3 bg-black text-[15px] text-white font-bold rounded-[20px]" @click="saveCartToLocalStorage">Continues Checkout</button>
-                    </router-link>
+                    <button class="w-[200px] p-3 bg-black text-[15px] text-white font-bold rounded-[20px]" @click="saveCartToLocalStorage">Continues Checkout</button>
                 </div>
             </div>
         </div>

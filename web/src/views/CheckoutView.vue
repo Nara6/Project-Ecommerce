@@ -70,8 +70,26 @@ export default {
     }
   },
   methods: {
+    showErrorToast(message) {
+        Toastify({
+            text: message,
+            backgroundColor: "red",
+            canTimeout: true,
+            duration: 3000, // 3 seconds
+            close: true,
+        }).showToast();
+    },
     SaveToLocal(){
-      localStorage.setItem('shipping_address', JSON.stringify(this.shipping_address));
+      if(this.shipping_address.address&&this.shipping_address.firstName
+      &&this.shipping_address.lastName&&this.shipping_address.country
+      &&this.shipping_address.city
+      ){
+        localStorage.setItem('shipping_address', JSON.stringify(this.shipping_address));
+        this.$router.push({ path: '/cart/shipping',replace:true });
+      }else{
+        this.showErrorToast("You are missing something!");
+      }
+      
     }
   },
 }
@@ -89,7 +107,7 @@ export default {
         </div>
         <div class="relative w-full m-auto ">
             <div class=" w-[65%] absolute left-0 flex flex-col border-t-[1px] pl-0 gap-y-4 ">
-              <div class="w-full flex flex-col gap-y-4">
+              <form class="w-full flex flex-col gap-y-4">
                 <div class="text-[20px] font-[600]">Shipping address</div>
                 <div class="flex gap-x-7">
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
@@ -98,14 +116,14 @@ export default {
                   required
                   v-model="shipping_address.firstName"
                   placeholder="First name"
-                  >
+                  />
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
                   required
                   v-model="shipping_address.lastName"
                   placeholder="Last name"
-                  >
+                  />
                 </div>
                 <div>
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-full
@@ -113,7 +131,7 @@ export default {
                   type="text"
                   v-model="shipping_address.company"
                   placeholder="Company (Optional)"
-                  >
+                  />
                 </div>
                 <div class="flex w-full gap-x-7">
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-[70%]
@@ -122,21 +140,21 @@ export default {
                   required
                   v-model="shipping_address.address"
                   placeholder="Address"
-                  >
+                  />
                   <input class="p-2 pl-5 border-[2px] border-gray-500 w-[30%]
                   rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]" 
                   type="text"
                   v-model="shipping_address.apt"
                   placeholder="Apt. (Optional)"
-                  >
+                  />
                 </div>
                 <div class="flex w-full gap-x-7">
-                  <select v-model="shipping_address.country" 
+                  <select v-model="shipping_address.country" required
                    id="" class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
                     <option value="" disabled selected>Select Country</option>
                     <option value="Cambodia">Cambodia</option>
                   </select>
-                  <select name="" id="" v-model="shipping_address.city"
+                  <select required name="" id="" v-model="shipping_address.city"
                    class="p-2.5 border-[2px] w-full border-gray-500 rounded-[10px] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)]">
                    <option value="" disabled selected>Select City</option>
                    <option v-for="city in cambodianCities" :key="city" :value="city">{{ city }}</option>
@@ -147,7 +165,7 @@ export default {
                   required
                   v-model="shipping_address.zipCode"
                   placeholder="Zip Code"
-                  >
+                  />
                 </div>
                 <div class="flex gap-x-[330px] pt-4">
                   <router-link to="/cart" class="w-full ">
@@ -159,15 +177,16 @@ export default {
                     <span>Back to Cart</span>
                   </div>
                   </router-link>
-                  <router-link to="/cart/shipping" class="w-full" @click="SaveToLocal()">
-                    <div class="p-3.5 text-white rounded-[20px] font-bold bg-black
-                    w-full flex drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] justify-center">
-                    <span>Continues to Ship</span>
-                  </div>
-                  </router-link>
+                  <button type="submit" class="w-full" @click="SaveToLocal()">
+                      <div class="p-3.5 text-white rounded-[20px] font-bold bg-black
+                      w-full flex drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] justify-center">
+                      <span>Continues to Ship</span>
+                      </div>
+                  </button>
+                  
                   
                 </div>
-              </div>
+              </form>
             </div>
             <div v-if="subtotal" class="absolute right-0 flex w-[30%] h-[350px] p-4 border-[1px] flex-col bg-[#F5F5F5]">
                 <div class="text-[20px] border-b-[1px] w-full font-bold">

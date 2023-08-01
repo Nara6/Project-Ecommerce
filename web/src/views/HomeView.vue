@@ -35,15 +35,15 @@ export default {
 
 <template>
   <div class="wrapper mt-4 w-full" v-if="category">
-    <div class="w-full h-[425px] slider mt-4">
-      <p class="best">best product of the day</p>
-      <img src="../assets/images/headphone.png" alt="" class="headphone">
+    <div class="w-full h-[425px] relative flex justify-center slider1 mt-4">
+      <p class="best1">best product of the day</p>
+      <img src="../assets/images/headphone.png" alt="" class="">
       <p class="sony-xm5">sony-xm<span class="text-5">5</span></p>
-      <router-link to="/product/detail">
-        <button class="button-buynow"><span class="text-buynow">BUY NOW</span></button>
+      <router-link to="/product">
+        <button class="button-buynow1"><span class="text-buynow">BUY NOW</span></button>
       </router-link>
-      <button class="switch-slider-circle"></button>
-      <button class="switch-slider-ellipse"></button>
+      <!-- <button class="switch-slider-circle"></button>
+      <button class="switch-slider-ellipse"></button> -->
     </div>
     <div class="w-full h-[700px] p-9">
       <div class="flex flex-col gap-y-6">
@@ -169,19 +169,19 @@ export default {
     box-shadow: 10px 10px 4px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
   }
-    .slider{
+    .slider1{
       background: linear-gradient(180deg, #66EDBF 0%, rgba(182, 226, 211, 0) 100%), #EF7C8E;
     }
     .slide-1{
       background: linear-gradient(180deg, #EEACB6 0.23%, rgba(219, 219, 219, 0) 100%);
     }
-    .best{
+    .best1{
 
     position: absolute;
     width: 371px;
     height: 256px;
-    left: 95px;
-    top: 150px;
+    left: 150px;
+    top: 40px;
 
     font-family: 'Chivo';
     font-style: normal;
@@ -208,7 +208,7 @@ export default {
       position: absolute;
       width: 258px;
       height: 109px;
-      left: 900px;
+      right: 200px;
       top: 140px;
 
       font-family: 'Chivo';
@@ -228,12 +228,12 @@ export default {
     .text-5{
       color: #EF7C8E;
     }
-    .button-buynow{
+    .button-buynow1{
       position: absolute;
       width: 272px;
       height: 65px;
-      left: 154px;
-      top: 380px;
+      left: 200px;
+      top: 300px;
       background: #4D9FEB;
       box-shadow: 10px 10px 4px rgba(0, 0, 0, 0.25);
       border-radius: 10px;
