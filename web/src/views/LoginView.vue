@@ -12,6 +12,26 @@ export default {
         }
     },
     methods: {
+        showSuccessToast(message) {
+            Toastify({
+                text: message,
+                type: "success",
+                backgroundColor: "blue",
+                canTimeout: true,
+                duration: 3000, // 3 seconds
+                close: true,
+            }).showToast();
+            },
+            // Function to display an error toast
+            showErrorToast(message) {
+            Toastify({
+                text: message,
+                backgroundColor: "red",
+                canTimeout: true,
+                duration: 3000, // 3 seconds
+                close: true,
+            }).showToast();
+        },
         async onSubmit(e){
             this.loading = true;
             const url = "/api/auth/login"
@@ -27,8 +47,17 @@ export default {
                     this.$router.push({path:'/cart'});
 
                 }else{
-                    alert(res.data.error);
+                    console.log(res.data.error);
+                    if(res.data.error.email){
+                        this.showErrorToast(res.data.error.email[0]);
+                    }
+                    if(res.data.error.password){
+                        this.showErrorToast(res.data.error.password[0]);
+                    }
                 }
+            })
+            .catch(err=>{
+                this.showErrorToast(err.response.data.message);
             })
             this.loading=false;
         }

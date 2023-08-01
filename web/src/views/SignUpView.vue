@@ -33,6 +33,7 @@ export default {
             }).showToast();
         },
         async onSubmit(e){
+            e.preventDefault();
             this.loading=true;
             if(this.password===this.confirm_password){
                 const url = "/api/auth/register"
@@ -51,7 +52,7 @@ export default {
                         this.$router.push({name: 'login'});
 
                     }else{
-                        console.log(res.data);
+                        // console.log(res.data);
                         this.showErrorToast(res.data.error.email);
                     }
                 })
