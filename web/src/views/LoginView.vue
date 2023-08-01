@@ -71,7 +71,7 @@ export default {
             <div class="w-[45%] bg h-full"></div>
             <div class="w-[55%] flex flex-col">
                 <div class="flex justify-center py-[50px] font-bold text-2xl">
-                    Create your Free Account
+                    Sign in your account
                 </div>
                 <div class="px-9">
                     <form @submit="onSubmit" class="w-[80%] flex gap-y-4 flex-col font-semibold">
