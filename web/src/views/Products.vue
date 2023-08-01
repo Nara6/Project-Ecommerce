@@ -160,7 +160,8 @@ export default {
          w-[23%] drop-shadow-[10px_4px_4px_rgba(0,0,0,0.25)] rounded-[15px] p-6">
          <a :href="'/product/detail/'+product.id"
           class="flex flex-col items-center">
-          <img class="w-[200px] h-fit" :src="'/image'+product.image_url" alt="">
+          <img class="w-[200px] h-fit transition duration-300 ease-in-out hover:scale-110" 
+          :src="'/image'+product.image_url" alt="">
           <span>{{ product.title }}</span>
           <span class="text-blue-500">${{ product.price }}</span>
          </a>

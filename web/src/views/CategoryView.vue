@@ -45,8 +45,8 @@ export default {
       this.loading1 = true;
       this.product=''
       const proUrl = "/api/product/read?limit=10&"
-      console.log();
-      const product = await fetch(`${proUrl}?category_id=${id}&item_id=${itemId}`,{
+      console.log(id);
+      const product = await fetch(`${proUrl}category_id=${id}&item_id=${itemId}`,{
       method: "GET",
       headers: {
             'Content-type': 'application/json',

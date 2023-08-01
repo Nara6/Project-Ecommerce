@@ -26,7 +26,7 @@
         <div class="h-[40px] group relative ">
           <img src="../assets/images/user_svgrepo.com.svg" alt="" 
           class="h-[35px] transition duration-300 ease-in-out hover:scale-[1.2]">
-          <div class="hidden group-hover:block flex-col absolute font-bold
+          <div class="hidden group-hover:block flex-col absolute font-bold z-[1]
             bg-white w-[80px] h-[80px] rounded-md drop-shadow-2xl p-2">
             <router-link v-if="!user"  to="/auth/login" class="py-2 block hover:text-blue-400">Login</router-link>
             <router-link v-if="!user" to="/auth/signup" class="block w-[100px] hover:text-blue-400">Sign up</router-link>
