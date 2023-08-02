@@ -1,91 +1,118 @@
 <script >
-import categoryApi from "@/libs/apis/category";
-import itemApi from "@/libs/apis/item";
-import productApi from "@/libs/apis/product";
-import priceApi from "@/libs/apis/price";
-// import Button from "../../../../../../../TP08/vuejs-sample/src/components/nButton.vue";
+import axios from "axios"
+import Toastify from 'toastify-js';
 
 export default {
-//   components: { Button },
   data() {
     return {
       categories: [],
       items: [],
       products: [],
+      productDesc: '',
       title: "",
-      imageUrl: "",
-      desc: "",
-      categoryId: "",
-      itemId: "",
-      priceModalShown: false,
-      selectedProduct: null,
-      price: "",
-      source: "",
+      image_url: "",
+      description: "",
+      category_id: "",
+      item_id: "",
+      showModal: false,
+      note: '',
+      price: '',
     };
   },
+  watch:{
+    async category_id(newValue, oldValue){
+      const resCat = await axios.get(`/api/category/read/${newValue}`,{
+        headers:{'Content-Type': 'application/json'}
+      });
+      this.items = await resCat.data[0].item;
+      console.log(this.items);
+    }
+  },
   methods: {
-    async onCreateProduct(e) {
-      e.preventDefault();
-     
-      const formData = new FormData();
-      formData.append("title", this.title);
-      formData.append("desc", this.desc);
-      formData.append("item", this.itemId);
-      formData.append("category", this.categoryId);
+    showToast(msg){
+      Toastify({
+        text: msg,
+        backgroundColor: "red",
+        duration: 3000, // 3 seconds
+        close: true,
+      }).showToast();
+    },
+    toggleModal: function(){
+      this.showModal = !this.showModal;
+    },
+    async create() {
+      var bodyData = new FormData();
+      bodyData.append("title", this.title);
+      bodyData.append("description", this.description);
+      bodyData.append("item_id", this.item_id);
+      bodyData.append("price", this.price);
+      bodyData.append("category_id", this.category_id);
+      bodyData.append("image_url", this.image_url);
+      bodyData.append("note", this.note);
+      // console.log(bodyData.getAll());
+      const res = await axios.post('/api/product/create',bodyData,{
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log(res.data);
+      if(res.data.product){
+        this.showToast("Product Created Successfully");
+        this.showModal = !this.showModal;
+        const res = await axios.get('/api/product/read?limit=100',{
+          headers:{'Content-Type': 'application/json'}
+        });
+        // console.log(res.data);
+        this.products = await res.data;
+        this.productDesc = this.products.map((product) => {
+          const descriptionArray = product.description.split(',');
+          return {...product, descriptionArray};
+        });
+      }else{
+        if(res.data.errors.title){
+          this.showToast(res.data.errors.title[0]);
+        }
+        if(res.data.errors.description){
+          this.showToast(res.data.errors.description[0]);
+        }
+        if(res.data.errors.category_id){
+          this.showToast(res.data.errors.category_id[0]);
+        }
+        if(res.data.errors.item_id){
+          this.showToast(res.data.errors.item_id[0]);
+        }
+        if(res.data.errors.note){
+          this.showToast(res.data.errors.note[0]);
+        }
+        if(res.data.errors.price){
+          this.showToast(res.data.errors.price[0]);
+        }
 
-
-      // this.imageUrl = document.getElementById('imageUrl');
-      // for(let i = 0; i < this.imageUrl.files.length; i++) {
-      //   formData.append("imageUrl", this.imageUrl.files[i]);
-      // }
-      formData.append("imageUrl", this.imageUrl);
-      console.log(this.imageUrl);
-      // console.log(formData.getAll());
-      const result = await productApi.create(formData);
-      if (!result) {
-        alert(result.error);
-        return;
       }
-      this.products = await productApi.all();
-      this.title =
-        this.desc =
-        this.categoryId =
-        this.itemId =
-        this.imageUrl =
-          "";
     },
     handleFileUpload(e){
-      this.imageUrl = e.target.files[0];
+      this.image_url = e.target.files[0];
       // console.log(this.imageUrl);
     },
-    onSelectProduct(product) {
-      this.priceModalShown = true;
-      this.selectedProduct = product;
-    },
-    async onAddPrice(e) {
-      e.preventDefault();
-      const { price, source, selectedProduct } = this;
-      const result = await priceApi.add({
-        price,
-        source,
-        product: selectedProduct?._id,
-      });
-      
-      console.log(result);
-      if (result.error) {
-        alert(result.error);
-        return;
-      }
-
-      this.products = await productApi.all();
-      this.price = this.source = this.selectedProduct = "";
-    },
   },
+
   async mounted() {
-    this.categories = await categoryApi.all();
-    this.items = await itemApi.all();
-    this.products = await productApi.all();
-    this.prices = this.products
+    const res = await axios.get('/api/product/read?limit=100',{
+      headers:{'Content-Type': 'application/json'}
+    });
+    // console.log(res.data);
+    this.products = await res.data;
+    // console.log(this.products);
+    this.productDesc = this.products.map((product) => {
+      const descriptionArray = product.description.split(',');
+      return {...product, descriptionArray};
+    });
+    // console.log(this.productDesc);
+    const resCat = await axios.get('/api/category/read?limit=100',{
+      headers:{'Content-Type': 'application/json'}
+    });
+    this.categories = await resCat.data;
   },
 };
 </script>
@@ -96,69 +123,72 @@ export default {
     <div class="bg-gray-500 text-white py-2 text-lg text-center">
       <h1>Products</h1>
     </div>
-    <div class="py-2">
-      <form @submit="onCreateProduct" method="post">
-        <div class="flex flex-row py-2 px-2 space-x-1 bg-gray-100">
-          <div>
-            <input required v-model="title" type="text" placeholder="Title" />
+    <div v-if="showModal" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+      <div class="relative w-[50%] my-6 mx-auto max-w-lg">
+        <!--content-->
+        <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          <!--header-->
+          <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+            <h3 class="text-3xl font-semibold">
+              Create New Category
+            </h3>
           </div>
-          <div>
-            <label for="category">Choose a category:</label>
-            <select
-              required
-              v-model="categoryId"
-              name="category"
-              class="px-2 mx-2 rounded-sm bg-green-100"
-            >
-              <option
-                v-for="category in categories"
-                :key="category.name"
-                :value="category._id"
-              >
-                {{ category.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label for="item">Choose an item:</label>
-            <select
-              required
-              v-model="itemId"
-              name="item"
-              class="px-2 mx-2 rounded-sm bg-green-100"
-            >
-              <option v-for="item in items" :key="item.name" :value="item._id">
-                {{ item.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <input
-              id="imageUrl"
-              required
-              type="file"
-              placeholder="ImageURL"
+          <!--body-->
+          <div class="relative justify-center p-6 flex">
+            <div class="w-[90%] gap-1 text-left flex flex-col">
+              <label for="">Title: </label>
+              <input v-model="title" class="w-full p-2 border-2"
+              type="text" placeholder="Ex: Phone" required>
+              <label for="">Price: </label>
+              <input v-model="price" class="w-full p-2 border-2"
+              type="text" placeholder="899" required>
+              <label for="">Category: </label>
+              <select v-model="category_id"
+               class="w-full p-2 border-2">
+                <option selected disabled value="">Select Category</option>
+                <option v-for="category in categories" :key="category.id"
+                 :value="category.id">{{ category.name }}</option>
+              </select>
+              <label for="">Sub-Category: </label>
+              <select v-model="item_id"
+               class="w-full p-2 border-2">
+                <option selected disabled value="">Select Sub-Category</option>
+                <option v-for="item in items" :key="item.id"
+                 :value="item.id">{{ item.name }}</option>
+              </select>
+              <label for="">Description: </label>
+              <input v-model="description" class="w-full p-2 border-2"
+              type="text" placeholder="Lorem ipsum dolor, sit amet consectetur, adipisicing elit, Consecteturquaera" required>
+              <label for="">Note: </label>
+              <input v-model="note" class="w-full p-2 border-2"
+              type="text" placeholder="Lorem ipsum dolor, sit amet consectetur, adipisicing elit, Consecteturquaera" required>
+              <label for="">File: </label>
+              <input type="file"
               @change="handleFileUpload($event)"
-            />
+              >
+            </div>
           </div>
-          <div>
-            <input
-              required
-              v-model="desc"
-              type="text"
-              placeholder="Description"
-            />
-          </div>
-          <div>
-            <button
-              type="submit"
-              class="bg-blue-500 text-white p-1 px-2 rounded-md"
-            >
-              Add new
+          <!--footer-->
+          <div class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+            <button class="text-red-500 bg-transparent border border-solid border-red-500 hover:bg-red-500 hover:text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" v-on:click="toggleModal()">
+              Close
+            </button>
+            <button class="bg-green-500 text-white rounded background-transparent font-bold uppercase px-6 py-3 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" @click="create()">
+              Save Changes
             </button>
           </div>
         </div>
-      </form>
+      </div>
+    </div>
+    <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    <div class="py-2">
+      <button
+        @click="toggleModal()"
+        type="submit"
+        class="bg-blue-500 text-white p-1 px-2 rounded-md"
+      >
+        Add new
+      </button>
     </div>
     <div>
       <table id="customers">
@@ -166,39 +196,31 @@ export default {
           <th>Title</th>
           <th>Prices</th>
           <th>Category</th>
-          <th>Item</th>
+          <th>Sub-Category</th>
           <th>ImageURL</th>
           <th>Description</th>
           <th>Action</th>
         </tr>
 
-        <tr v-for="product in products" :key="product._id">
-          <router-link :to="'/dashboard/product/'+product._id">
-            <td>{{ product.title }}</td>
-          </router-link>
+        <tr v-for="product in productDesc" :key="product._id">
+          <td>{{ product.title }}</td>
           <td>
-            <ul>
-              <li v-for="price in product?.prices" :key="price._id">
-                <span>{{ price.price }}$</span>
-                <span>({{ price.source }})</span>
-              </li>
-            </ul>
+            ${{ product.price }}
           </td>
           <td>{{ product.category?.name }}</td>
           <td>{{ product.item?.name }}</td>
-          <td>{{ product.imageUrl }}</td>
-          <td>{{ product.desc }}</td>
+          <td class="flex justify-center"><img class="w-[100px] h-[100px]"
+            :src="'/image'+product.image_url" alt=""></td>
+          <td>
+            <ul class="list-disc list-inside text-left" v-for="(des,index) in product.descriptionArray" :key="index">
+              <li>{{des}}</li>
+            </ul>
+          </td>
           <td>
             <div class="flex flex-col space-y-2">
               <button class="hover:text-green-600 hover:font-bold">Edit</button>
               <button class="hover:text-green-600 hover:font-bold">
                 Delete
-              </button>
-              <button
-                v-on:click="onSelectProduct(product)"
-                class="hover:text-green-600 hover:font-bold"
-              >
-                Add price
               </button>
             </div>
           </td>

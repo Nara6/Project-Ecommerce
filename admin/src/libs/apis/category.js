@@ -1,12 +1,11 @@
 
 var categoryApi = {
     async getCategoryItem() {
-        const res = await fetch('http://localhost:3001/category/categorized-items',{
+        const res = await fetch('/api/category/read',{
             method: 'GET',
             credentials: 'include',
             headers: {
                 'Content-type': 'application/json',
-                Origin: 'http://localhost:8080'
             }
         })
         const result = await res.json();
@@ -27,20 +26,19 @@ var categoryApi = {
         return result;
       },
       async all() {
-        const res = await fetch("http://localhost:3001/category/all", {
+        const res = await fetch("/api/category/read", {
           method: "GET",
-          credentials: "include",
           headers: {
-            "Content-type": "application/json",
-            Origin: "http://localhost:8080",
+            "Content-type": "application/json"
           },
         });
-    
+        // console.log(await res);
         const result = await res.json();
+        console.log(result);
         // console.log(result);
-        if (!result['data']?.length) return [];
+        // if (!result['data']?.length) return [];
     
-        return result['data'];
+        // return result['data'];
       }
     
 }

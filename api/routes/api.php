@@ -39,6 +39,8 @@ Route::middleware('jwt.verify')->group(function(){
 });
 
 Route::get('category/read', [CategoryController::class, 'read']);
+Route::get('category/read/{id}', [CategoryController::class, 'getCategoryById']);
+
 Route::get('item/read', [ItemController::class, 'read']);
 Route::get('color/read', [ColorController::class, 'read']);
 Route::get('product/read', [ProductController::class, 'read']);

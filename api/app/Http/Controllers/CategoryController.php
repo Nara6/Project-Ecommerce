@@ -27,6 +27,10 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getCategoryById($id){
+        $data = Category::select('*')->where("id",$id)->with(['item'])->get();
+        return $data;
+    }
     public function create(Request $req)
     {
         $validator = Validator::make($req->all(),[

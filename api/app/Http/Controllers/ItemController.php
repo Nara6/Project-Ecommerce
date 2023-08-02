@@ -56,7 +56,7 @@ class ItemController extends Controller
         }
         $item->save();
         return response()->json([
-            'category' => $item,
+            'item' => $item,
             'message' => 'item has been successfully created.'
         ], 200);
     }
