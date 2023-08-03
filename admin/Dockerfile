@@ -1,7 +1,6 @@
-FROM node:17.0.0-alpine
-WORKDIR /usr/src/app/vueadmin
-COPY package*.json ./
-RUN npm install
+FROM node:lts-alpine
+WORKDIR /app
 COPY . .
+RUN npm install
 EXPOSE 3000
-CMD ["npx", "serve", "dist"]
+CMD [ "npm", "run", "serve", "--", "--host", "0.0.0.0" ]
