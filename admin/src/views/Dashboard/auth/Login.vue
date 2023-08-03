@@ -5,8 +5,8 @@ export default {
     name:'login',
     data(){
         return{
-            email:'',
-            password:'',
+            email:'yinsoknara@gmail.com',
+            password:'123456',
             loading: false,
         }
     },
