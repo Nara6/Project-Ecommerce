@@ -4,7 +4,6 @@ module.exports = defineConfig({
   devServer: {
     port: 3000,
     disableHostCheck: true,
-    host: '0.0.0.0',
     proxy: {
       "^/api": {
         target: "http://35.186.150.74:1026",
