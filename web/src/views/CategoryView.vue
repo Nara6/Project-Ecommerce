@@ -13,7 +13,7 @@ export default {
     }
   },
   async mounted(){
-    const catUrl = "/api/category/read"
+    const catUrl = "/api/category/read?limit=20"
     const proUrl = "/api/product/read?limit=10&"
     const category = await fetch(catUrl,{
       method: "GET",
