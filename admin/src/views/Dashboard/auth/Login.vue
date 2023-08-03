@@ -40,13 +40,13 @@ export default {
                 password: this.password
             })
             .then((res)=>{
-                // console.log(res.data);
+                console.log(res.data);
                 if(res.data.success){
                     if(res.data.data.role===1){
                         localStorage.setItem('token', res.data.token);
                         this.$router.push({path:'/'});
-                    }else{
-                        showErrorToast("Access Denied!")
+                    }else if(res.data.data.role===2){
+                        this.showErrorToast("Access Denied!")
                     }
                 }else{
                     console.log(res.data.error);
