@@ -138,9 +138,9 @@ export default {
             <div class="flex gap-5 w-full flex-wrap">
                 <div v-if="product" v-for="products in product" :key="products.id">
                   <router-link :to="'/product/detail/'+products.id">
-                    <div class="flex h-fit p-[40px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
+                    <div class="h-[300px] w-[300px] flex p-[40px] bg-[#D9D9D9] flex-col items-center gap-y-2 drop-shadow-[10px_10px_4px_rgba(0,0,0,0.25)]">
                       <img :src="this.url+products.image_url" alt=""
-                      class="w-[150px] h-[150px] transition duration-300 ease-in-out hover:scale-110">
+                      class="object-scale-down w-[150px] h-[150px] transition duration-300 ease-in-out hover:scale-110">
                       <span class="text-[20px]">{{ products.title }}</span>
                       <span class="text-[20px] text-red-500 font-bold">$ {{ products.price }}</span> 
                     </div>
