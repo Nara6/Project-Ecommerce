@@ -9,7 +9,7 @@ use App\Models\OrderDetail;
 class OrderDetailController extends Controller
 {
     public function read(){
-        return $data = OrderDetail::select('*')->get();
+        return $data = OrderDetail::select('*')->with(['product','order'])->get();
     }
     public function create(Request $req){
         $validator = Validator::make($req->all(),[
@@ -30,5 +30,9 @@ class OrderDetailController extends Controller
         $orderDetail -> discount = $req['discount'] ?? null;
         $orderDetail -> save();
         return response()->json(["success"=> true, 'order_detal'=>$orderDetail],200);
+    }
+    public function getOrderDetailById($id){
+        $data = OrderDetail::select('*')->where("id",$id)->with(['product','order'])->get();
+        return $data;
     }
 }

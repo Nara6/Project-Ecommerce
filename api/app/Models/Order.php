@@ -9,4 +9,7 @@ class Order extends Model
 {
     use HasFactory;
     protected $table= 'order';
+    public function orderDetail(){
+        return $this->hasMany('App\Models\OrderDetail', "order_id");
+    }
 }

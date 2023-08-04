@@ -93,7 +93,7 @@ export default {
     <div class="w-full pl-9 pr-9 flex flex-col gap-y-6">
       <div class="flex justify-between">
         <p class="trend">Popular Products</p>
-        <a href="#" class="underline underline-offset-2 text-[20px]" style="font-family: 'Roboto',sans-serif; color: #0862CB;">View all Product</a>
+        <a href="/product" class="underline underline-offset-2 text-[20px]" style="font-family: 'Roboto',sans-serif; color: #0862CB;">View all Product</a>
       </div>
       
       <div class="flex justify-between gap-x-5 " >

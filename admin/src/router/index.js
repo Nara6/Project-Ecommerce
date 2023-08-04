@@ -1,21 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import HomeView from '../views/HomeView.vue'
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'home',
-  //   component: HomeView
-  // },
   {
     path: '/auth/login',
     name: 'login',
     component: ()=> import ('../views/Dashboard/auth/Login')
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: ()=> import ('../views/SignupView')
   },
   {
     path: '/',
@@ -31,24 +20,17 @@ const routes = [
         path: 'product',
         name: 'product',
         component: ()=> import ('../views/Dashboard/pages/product'),
-        // children: [
-        //   {
-        //     path: ':productId',
-        //     props: true,
-        //     component: ()=> import ('../views/Dashboard/pages/productDetail.vue')
-        //   }
-        // ]
-      },
-      {
-        path: 'product/:id',
-        name: 'productDetail',
-        component: ()=> import ('../views/Dashboard/pages/productDetail.vue')
       },
       {
         path: 'item',
         name: 'item',
         component: ()=> import ('../views/Dashboard/pages/item')
-      }
+      },
+      {
+        path: 'order',
+        name: 'order',
+        component: ()=> import ('../views/Dashboard/pages/order')
+      },
     ]
   },
 

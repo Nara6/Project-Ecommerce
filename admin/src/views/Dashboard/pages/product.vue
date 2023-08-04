@@ -17,6 +17,9 @@ export default {
       showModal: false,
       note: '',
       price: '',
+      showDeleteButton: null,
+      showModalDelete: false,
+      product_id: ''
     };
   },
   watch:{
@@ -95,6 +98,43 @@ export default {
       this.image_url = e.target.files[0];
       // console.log(this.imageUrl);
     },
+    toggleModalDelete: function(id){
+      this.product_id=id;
+      this.showModalDelete = !this.showModalDelete;
+    },
+    async deleteCategory(){
+      const res = await axios.delete(`/api/product/remove/${this.product_id}`,{
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      console.log(res.data);
+      if(res.data.status==='success'){
+        Toastify({
+          text: await res.data.message,
+          backgroundColor: "blue",
+          duration: 3000, // 3 seconds
+          close: true,
+        }).showToast();
+        const respro = await axios.get('/api/product/read?limit=100',{
+          headers:{'Content-Type': 'application/json'}
+        });
+        // console.log(res.data);
+        this.products = await respro.data;
+        this.productDesc = this.products.map((product) => {
+          const descriptionArray = product.description.split(',');
+          return {...product, descriptionArray};
+        });
+        this.showModalDelete = !this.showModalDelete;
+      }else{
+        Toastify({
+          text: await res.response.data.message,
+          backgroundColor: "red",
+          duration: 3000, // 3 seconds
+          close: true,
+        }).showToast();
+      }
+    },
   },
 
   async mounted() {
@@ -130,7 +170,7 @@ export default {
           <!--header-->
           <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
             <h3 class="text-3xl font-semibold">
-              Create New Category
+              Create New Product
             </h3>
           </div>
           <!--body-->
@@ -181,6 +221,38 @@ export default {
       </div>
     </div>
     <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    <div v-if="showModalDelete" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+      <div class="relative w-[50%] my-6 mx-auto max-w-lg">
+        <!--content-->
+        <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          <!--header-->
+          <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+            <h3 class="text-3xl font-semibold">
+              Delete Confirmation
+            </h3>
+          </div>
+          <!--body-->
+          <div class="relative justify-center p-6 flex text-1xl">
+            Are you sure you want to delete this product?
+          </div>
+          <!--footer-->
+          <div class="flex items-center justify-around p-6 border-t border-solid border-slate-200 rounded-b">
+            <button class="text-red-500 bg-transparent border border-solid border-red-500 hover:bg-red-500 hover:text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" v-on:click="toggleModalDelete()">
+              Close
+            </button>
+            <button 
+            class="bg-green-500 text-white rounded
+             background-transparent font-bold uppercase
+              px-8 py-3 text-sm outline-none focus:outline-none
+              mr-1 mb-1 ease-linear transition-all duration-150"
+              @click="deleteCategory()">
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="showModalDelete" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
     <div class="py-2">
       <button
         @click="toggleModal()"
@@ -197,32 +269,43 @@ export default {
           <th>Prices</th>
           <th>Category</th>
           <th>Sub-Category</th>
-          <th>ImageURL</th>
           <th>Description</th>
-          <th>Action</th>
+          <th>ImageURL</th>
         </tr>
 
-        <tr v-for="product in productDesc" :key="product._id">
+        <tr
+        @mouseover="showDeleteButton = product.id"
+        @mouseleave="showDeleteButton = null"
+        v-for="product in productDesc" :key="product._id">
           <td>{{ product.title }}</td>
           <td>
             ${{ product.price }}
           </td>
           <td>{{ product.category?.name }}</td>
           <td>{{ product.item?.name }}</td>
-          <td class="flex justify-center"><img class="w-[100px] h-[100px]"
-            :src="'/image'+product.image_url" alt=""></td>
           <td>
             <ul class="list-disc list-inside text-left" v-for="(des,index) in product.descriptionArray" :key="index">
               <li>{{des}}</li>
             </ul>
           </td>
-          <td>
-            <div class="flex flex-col space-y-2">
-              <button class="hover:text-green-600 hover:font-bold">Edit</button>
-              <button class="hover:text-green-600 hover:font-bold">
-                Delete
-              </button>
+          <td class="flex justify-center relative w-full">
+            <div>
+              <img class="w-[100px] h-fit" 
+              :src="'/image'+product.image_url" alt=""
+              :style="{ 'filter': showDeleteButton === product.id ? 'blur(4px)' : 'none' }"
+              >
             </div>
+            <button
+              v-if="showDeleteButton === product.id"
+              class="absolute top-[50%] left-[50%]
+              transform -translate-x-1/2 -translate-y-1/2
+              bg-red-500 hover:bg-red-600
+              backdrop-filter backdrop-blur-lg
+              text-white px-4 py-2 rounded"
+              @click="toggleModalDelete(product.id)"
+            >
+            Delete
+            </button>
           </td>
         </tr>
       </table>

@@ -60,6 +60,25 @@ class ItemController extends Controller
             'message' => 'item has been successfully created.'
         ], 200);
     }
+    public function remove($id){
+        $data = Item::find($id);
+        if($data){
+
+            $data->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data has been deleted',
+            ], 200);
+
+        }else{
+
+            return response()->json([
+                'message' => 'Invalid data.',
+            ], 400);
+
+        }
+    }
 
     /**
      * Store a newly created resource in storage.

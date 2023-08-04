@@ -85,6 +85,9 @@ export default {
           <router-link to="/product"
             ><div class="hover:bg-white hover:font-bold">Product</div></router-link
           >
+          <router-link to="/order"
+            ><div class="hover:bg-white hover:font-bold">Order</div></router-link
+          >
         </div>
       </div>
       <div class="basic-4/5 p-1 w-full">

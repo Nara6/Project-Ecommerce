@@ -56,6 +56,25 @@ class CategoryController extends Controller
         ], 200);
         
     }
+    public function remove($id){
+        $data = Category::find($id);
+        if($data){
+
+            $data->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data has been deleted',
+            ], 200);
+
+        }else{
+
+            return response()->json([
+                'message' => 'Invalid data.',
+            ], 400);
+
+        }
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -110,6 +129,6 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
     }
 }

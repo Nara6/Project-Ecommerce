@@ -9,7 +9,10 @@ export default {
       name: "",
       category_id: "",
       description: "",
-      showModal: false
+      showModal: false,
+      showModalDelete: false,
+      showDeleteButton: null,
+      item_id: '',
     };
   },
   methods: {
@@ -26,8 +29,19 @@ export default {
           'Content-Type': 'application/json'
         }
       })
-      if(res.data.category){
+      console.log(res.data);
+      if(res.data.item){
+        Toastify({
+          text: await res.data.message,
+          backgroundColor: "blue",
+          duration: 3000, // 3 seconds
+          close: true,
+        }).showToast();
         this.showModal = !this.showModal;
+        const resitem = await axios.get('/api/item/read',{
+          headers:{'Content-Type': 'application/json'}
+        });
+        this.items = await resitem.data;
       }else{
         if(res.data.error.category_id){
           Toastify({
@@ -52,11 +66,39 @@ export default {
           }).showToast();
         }
       }
-      
+
     },
     toggleModal: function(){
       this.showModal = !this.showModal;
-    }
+    },
+    toggleModalDelete: function(id){
+      this.item_id=id;
+      this.showModalDelete = !this.showModalDelete;
+    },
+    async deleteCategory(){
+      const res = await axios.delete(`/api/item/remove/${this.item_id}`)
+      if(res.data.status==='success'){
+        Toastify({
+          text: await res.data.message,
+          backgroundColor: "blue",
+          duration: 3000, // 3 seconds
+          close: true,
+        }).showToast();
+        const resitem = await axios.get('/api/item/read',{
+          headers:{'Content-Type': 'application/json'}
+        });
+        this.items = await resitem.data;
+        this.showModalDelete = !this.showModalDelete;
+      }else{
+        Toastify({
+          text: await res.response.data.message,
+          backgroundColor: "red",
+          duration: 3000, // 3 seconds
+          close: true,
+        }).showToast();
+      }
+    },
+
   },
   async mounted() {
     const res = await axios.get('/api/item/read',{
@@ -84,7 +126,7 @@ export default {
           <!--header-->
           <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
             <h3 class="text-3xl font-semibold">
-              Create New Category
+              Create New Item
             </h3>
           </div>
           <!--body-->
@@ -118,6 +160,38 @@ export default {
       </div>
     </div>
     <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    <div v-if="showModalDelete" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+      <div class="relative w-[50%] my-6 mx-auto max-w-lg">
+        <!--content-->
+        <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          <!--header-->
+          <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+            <h3 class="text-3xl font-semibold">
+              Delete Confirmation
+            </h3>
+          </div>
+          <!--body-->
+          <div class="relative justify-center p-6 flex text-1xl">
+            Are you sure you want to delete this item?
+          </div>
+          <!--footer-->
+          <div class="flex items-center justify-around p-6 border-t border-solid border-slate-200 rounded-b">
+            <button class="text-red-500 bg-transparent border border-solid border-red-500 hover:bg-red-500 hover:text-white active:bg-red-600 font-bold uppercase text-sm px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" v-on:click="toggleModalDelete()">
+              Close
+            </button>
+            <button 
+            class="bg-green-500 text-white rounded
+             background-transparent font-bold uppercase
+              px-8 py-3 text-sm outline-none focus:outline-none
+              mr-1 mb-1 ease-linear transition-all duration-150"
+              @click="deleteCategory()">
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="showModalDelete" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
     <div class="py-2">
           <div>
             <button 
@@ -135,10 +209,31 @@ export default {
           <th>Description</th>
         </tr>
 
-        <tr v-for="item in items" :key="item.name">
+        <tr @mouseover="showDeleteButton = item.id"
+          @mouseleave="showDeleteButton = null"
+        v-for="item in items" :key="item.name">
           <td>{{ item.name }}</td>
           <td class="font-bold">{{ item.category.name }}</td>
-          <td>{{ item.description }}</td>
+          <td>
+            <div class="relative w-full">
+              
+              <p :style="{ 'filter': showDeleteButton === item.id ? 'blur(4px)' : 'none' }"
+              >{{ item.description }}</p>
+              <button
+                v-if="showDeleteButton === item.id"
+                class="absolute top-[50%] left-[50%]
+                transform -translate-x-1/2 -translate-y-1/2
+                bg-red-500 hover:bg-red-600
+                backdrop-filter backdrop-blur-lg
+                text-white px-4 py-2 rounded"
+                @click="toggleModalDelete(item.id)"
+              >
+              Delete
+              </button>
+            </div>
+            
+          
+          </td>
         </tr>
       </table>
     </div>

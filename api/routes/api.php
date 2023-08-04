@@ -40,11 +40,11 @@ Route::middleware('jwt.verify')->group(function(){
 
 Route::get('category/read', [CategoryController::class, 'read']);
 Route::get('category/read/{id}', [CategoryController::class, 'getCategoryById']);
-
 Route::get('item/read', [ItemController::class, 'read']);
 Route::get('color/read', [ColorController::class, 'read']);
 Route::get('product/read', [ProductController::class, 'read']);
-// Route::get('product/read/{category_id?}/{item_id?}', [ProductController::class, 'read']);
+Route::delete('category/remove/{id}', [CategoryController::class, 'remove']);
+Route::delete('item/remove/{id}', [ItemController::class, 'remove']);
 Route::get('product/read/{id}', [ProductController::class, 'getProductById']);
 Route::get('billingaddress/read', [BillingAddressController::class, 'read']);
 Route::get('shippingaddress/read', [ShippingAddressController::class, 'read']);
@@ -53,6 +53,8 @@ Route::get('paymentmethod/read', [PaymentMethodController::class, 'read']);
 Route::get('order/read', [OrderController::class, 'read']);
 Route::get('order/read/{id}', [OrderController::class, 'getOrderById']);
 Route::get('orderdetail/read', [OrderDetailController::class, 'read']);
+Route::get('orderdetail/read/{id}', [OrderDetailController::class, 'getOrderDetailById']);
+
 
 
 Route::middleware('jwt.verify')->prefix('category')->group(function(){
