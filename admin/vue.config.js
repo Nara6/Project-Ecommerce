@@ -6,8 +6,8 @@ module.exports = defineConfig({
     allowedHosts: "all",
     proxy: {
       "^/api": {
-        target: "http://127.0.0.1:8000",
-        // target: "http://35.186.150.74:1026",
+        // target: "http://127.0.0.1:8000",
+        target: "http://35.186.150.74:1026",
         changeOrigin: true,
         // pathRewrite: {
         //   '^/api': '/'
