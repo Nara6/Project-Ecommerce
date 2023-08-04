@@ -172,9 +172,19 @@ export default {
           }
       })
       .catch((err)=>{
-          // console.log(err);
           console.log(err);
-          // this.showErrorToast(err.response.data.message);
+          if(err.response.data.errors.card_number){
+            this.showErrorToast(err.response.data.errors.card_number[0]);
+          }
+          if(err.response.data.errors.cardholder_name){
+            this.showErrorToast(err.response.data.errors.cardholder_name[0]);
+          }
+          if(err.response.data.errors.cvv){
+            this.showErrorToast(err.response.data.errors.cvv[0]);
+          }
+          if(err.response.data.errors.expired_date){
+            this.showErrorToast(err.response.data.errors.expired_date[0]);
+          }
       })
     }
   },
